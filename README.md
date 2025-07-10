@@ -14,4 +14,5 @@ https://github.com/user-attachments/assets/e3925283-2f59-43aa-a56f-2a4a6a45c6df
 
 ### \>server-duration - Displays total time of each song in #wip-beats combined.
 
+# note
 no install instructions at this time sorry!

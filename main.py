@@ -82,11 +82,26 @@ intents.message_content = True  # NOQA
 client: Client = Client(intents=intents)
 
 
+def valid_command(user_message: str) -> bool:
+    if (user_message == ">scan" or
+            user_message == ">help" or
+            user_message == ">server-duration" or
+            user_message == ">server-stats" or
+            user_message == ">stats" or
+            user_message == ">leaderboard"):
+        return True
+    return False
+
+
 # message functionality
 async def send_message(message: Message, user_message: str) -> None:
     if not user_message:
         return
-    if user_message == ">scan":
+
+    elif not valid_command(user_message):
+        return
+
+    elif user_message == ">scan":
         await message.channel.send("Scanning `#wip-beats` for past audio uploads...")
 
         file_path = "data.txt"
@@ -128,7 +143,7 @@ async def send_message(message: Message, user_message: str) -> None:
 
         await message.channel.send(f"✅ Scan complete. Found {found_count} valid audio uploads.")
         return
-    if user_message == ">help":
+    elif user_message == ">help":
         await message.channel.send("**>scan** - Rescans all of #wip-beats for .mp3 and .wav (above 10 seconds long).\n"
                                    "**>leaderboard** - Shows top 3 users with most songs sent.\n"
                                    "**>stats** - Displays personal stats (song count and total duration of songs)\n"
@@ -136,7 +151,7 @@ async def send_message(message: Message, user_message: str) -> None:
                                    "**>server-duration** - Displays total time of each song in #wip-beats combined.")
         return
 
-    if user_message == ">server-duration":
+    elif user_message == ">server-duration":
         user_data = load_user_data()
         if not user_data:
             await message.channel.send("No songs have been submitted yet!")
@@ -154,7 +169,7 @@ async def send_message(message: Message, user_message: str) -> None:
         )
         return
 
-    if user_message == ">leaderboard":
+    elif user_message == ">leaderboard":
         user_data = load_user_data()
         if not user_data:
             await message.channel.send("No songs have been submitted yet!")
@@ -171,7 +186,7 @@ async def send_message(message: Message, user_message: str) -> None:
 
         await message.channel.send(leaderboard_msg)
         return
-    if user_message == ">stats":
+    elif user_message == ">stats":
         user_data = load_user_data()
         data = user_data.get(str(message.author), {'count': 0, 'duration': 0.0})
         duration_str = format_duration(data['duration'])
@@ -180,7 +195,7 @@ async def send_message(message: Message, user_message: str) -> None:
             f"with a total duration of **{duration_str}**!")
         return
 
-    if user_message == ">server-stats":
+    elif user_message == ">server-stats":
         user_data = load_user_data()
         if not user_data:
             await message.channel.send("No songs have been submitted yet!")
@@ -198,7 +213,7 @@ async def send_message(message: Message, user_message: str) -> None:
         await message.channel.send(serverstats_msg)
         return
 
-    if is_private := user_message[0] == '?':
+    elif is_private := user_message[0] == '?':
         user_message = user_message[1:]
 
     try:
@@ -245,7 +260,6 @@ async def on_message(message: Message) -> None:
                 # await attachment.save(save_path)
                 # print(f'Saved to {save_path}')
                 duration_str = format_duration(duration_sec)
-                # mwidmi
                 # await message.channel.send(f"Song {attachment.filename} has been saved! ({duration_str})")
 
             else:
